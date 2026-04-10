@@ -54,35 +54,22 @@ yarn run start
 
 ### Method 2 - Docker Compose (recommended)
 
-NanoWiki always stores your wiki files at `/data` inside the container. The only thing you configure is **which directory on your host machine** gets mapped there.
+Configuration is driven by your `.env` file, the same one used for local development. Docker Compose reads it automatically.
 
 ```bash
-# docker-compose.yml is already set up.
-# Edit the volume mount to point to your wiki directory, then:
+cp .env.example .env
+# edit .env to set NANOWIKI_DATA_DIR and PORT, then:
 docker compose up -d
 ```
 
-The relevant line in `docker-compose.yml`:
+The relevant `.env` variables:
 
-```yaml
-volumes:
-  - ./data:/data # change ./data to any path on your machine
+```
+NANOWIKI_DATA_DIR=/path/to/your/wiki   # host directory mounted into the container
+PORT=3000                               # port exposed on your host
 ```
 
-Examples:
-
-```yaml
-- ./data:/data # relative path next to docker-compose.yml
-- /home/alice/documents/wiki:/data # absolute path
-- ~/notes:/data # home-relative path
-```
-
-To change the port, update the left side of `ports`:
-
-```yaml
-ports:
-  - '8080:3000' # NanoWiki will be at http://localhost:8080
-```
+Both have sensible defaults (`./data` and `3000`) so the compose file works out of the box without a `.env`.
 
 ### Method 3 - Plain Docker
 

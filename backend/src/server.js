@@ -83,7 +83,7 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
 
   initSearch();
   startWatcher();
-  await app.listen({ port: config.port, host: '127.0.0.1' });
+  await app.listen({ port: config.port, host: '0.0.0.0' });
 
   async function shutdown() {
     await app.close();
