@@ -34,7 +34,7 @@ A minimalist local wiki. No login, no cloud. Reads and writes Markdown files dir
 
 ## Screenshots
 
-[Nanowiki](docs/screen1.png)
+![Nanowiki](docs/screen1.png)
 
 ---
 
