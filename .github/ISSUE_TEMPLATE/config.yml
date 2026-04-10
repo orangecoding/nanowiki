@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Discussions
+    url: https://github.com/orangecoding/nanowiki/discussions
+    about: Not a bug or feature request? Start a discussion instead.

@@ -1,0 +1,11 @@
+services:
+  nanowiki:
+    image: ghcr.io/orangecoding/nanowiki:latest
+    container_name: nanowiki
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      # Map the host directory that holds your wiki files to /data inside the container.
+      # Change the left side (./data) to point to wherever your .md files live.
+      - ./data:/data

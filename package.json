@@ -1,0 +1,56 @@
+{
+  "name": "nanowiki",
+  "version": "1.0.0",
+  "description": "A minimalist local wiki: no login, no cloud, just Markdown files. Fulltext search included.",
+  "author": "Christian Kellner",
+  "license": "Apache-2.0",
+  "keywords": [
+    "wiki",
+    "markdown",
+    "self-hosted",
+    "local-first",
+    "notes",
+    "knowledge-base",
+    "personal-wiki",
+    "fulltext-search",
+    "editor"
+  ],
+  "bugs": {
+    "url": "https://github.com/orangecoding/nanowiki/issues"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=7.0.0"
+  },
+  "scripts": {
+    "dev": "yarn --cwd frontend dev",
+    "build": "yarn --cwd frontend build",
+    "start": "yarn build && node --env-file=.env backend/src/server.js",
+    "test": "yarn test:backend && yarn test:frontend",
+    "test:backend": "yarn --cwd backend test",
+    "test:frontend": "yarn --cwd frontend test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,css,md}": "prettier --write"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "latest",
+    "husky": "latest",
+    "lint-staged": "latest",
+    "prettier": "latest"
+  }
+}

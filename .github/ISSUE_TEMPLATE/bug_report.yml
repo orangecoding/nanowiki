@@ -1,0 +1,76 @@
+name: Bug Report
+description: Something isn't working as expected
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as you can.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: When I do X, Y happens instead of Z.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How can we reliably trigger this?
+      placeholder: |
+        1. Open the app
+        2. Create a file named ...
+        3. Click ...
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: method
+    attributes:
+      label: How are you running NanoWiki?
+      options:
+        - Docker (docker compose)
+        - Docker (plain docker run)
+        - Local (node / yarn start)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Docker image tag or git commit
+      placeholder: 'latest / v1.0.0 / abc1234'
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Host OS
+      placeholder: 'macOS 15, Ubuntu 24.04, Windows 11, ...'
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or error output
+      description: Paste any console output, backend logs, or browser errors here.
+      render: shell
+    validations:
+      required: false

@@ -1,0 +1,44 @@
+{
+  "name": "nanowiki-frontend",
+  "version": "1.0.0",
+  "author": "Christian Kellner",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/lang-markdown": "^6",
+    "@codemirror/theme-one-dark": "^6",
+    "@tiptap/extension-code-block-lowlight": "^2",
+    "@tiptap/extension-image": "^2",
+    "@tiptap/extension-link": "^2",
+    "@tiptap/extension-strike": "^2",
+    "@tiptap/extension-table": "^2",
+    "@tiptap/extension-table-cell": "^2",
+    "@tiptap/extension-table-header": "^2",
+    "@tiptap/extension-table-row": "^2",
+    "@tiptap/react": "^2",
+    "@tiptap/starter-kit": "^2",
+    "codemirror": "^6",
+    "lowlight": "^3",
+    "react": "^19",
+    "react-dom": "^19",
+    "tiptap-markdown": "^0.8"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6",
+    "@testing-library/react": "^16",
+    "@testing-library/user-event": "^14",
+    "@vitejs/plugin-react": "^4",
+    "autoprefixer": "^10",
+    "jsdom": "^25",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "vite": "^6",
+    "vitest": "^2"
+  }
+}
