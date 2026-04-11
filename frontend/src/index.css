@@ -17,11 +17,11 @@ body,
 }
 
 body {
-  background-color: #080b14;
+  background-color: #0c0c0e;
   background-image:
     radial-gradient(ellipse at 70% 0%, rgba(249, 115, 22, 0.07) 0%, transparent 60%),
     radial-gradient(ellipse at 5% 85%, rgba(234, 88, 12, 0.04) 0%, transparent 50%);
-  color: #e1e7f0;
+  color: #e4e4e7;
   font-family: 'Outfit', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -33,37 +33,37 @@ body {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d1120;
+  background: #111113;
 }
 ::-webkit-scrollbar-thumb {
-  background: #253660;
+  background: #3f3f46;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8899bb;
+  background: #71717a;
 }
 
 /* Prose (WYSIWYG editor content) */
 .prose {
-  color: #8899bb;
+  color: #a1a1aa;
 }
 .prose h1 {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #e1e7f0;
+  color: #e4e4e7;
 }
 .prose h2 {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
-  color: #e1e7f0;
+  color: #e4e4e7;
 }
 .prose h3 {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #e1e7f0;
+  color: #e4e4e7;
 }
 .prose p {
   margin-bottom: 0.75rem;
@@ -83,7 +83,7 @@ body {
   margin-bottom: 0.25rem;
 }
 .prose code {
-  background: #1a2540;
+  background: #27272a;
   color: #f97316;
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
@@ -91,8 +91,8 @@ body {
   font-size: 0.875rem;
 }
 .prose pre {
-  background: #0d1120;
-  border: 1px solid #1a2540;
+  background: #111113;
+  border: 1px solid #27272a;
   border-radius: 6px;
   padding: 1rem;
   margin-bottom: 0.75rem;
@@ -100,7 +100,7 @@ body {
 }
 .prose pre code {
   background: transparent;
-  color: #e1e7f0;
+  color: #e4e4e7;
   padding: 0;
 }
 .prose a {
@@ -111,20 +111,20 @@ body {
   color: #ea580c;
 }
 .prose strong {
-  color: #e1e7f0;
+  color: #e4e4e7;
   font-weight: 600;
 }
 .prose em {
   font-style: italic;
 }
 .prose s {
-  color: #3d5070;
+  color: #52525b;
   text-decoration: line-through;
 }
 .prose blockquote {
   border-left: 3px solid #f97316;
   padding-left: 1rem;
-  color: #8899bb;
+  color: #a1a1aa;
   font-style: italic;
   margin: 0.75rem 0;
 }
@@ -134,15 +134,15 @@ body {
   margin-bottom: 0.75rem;
 }
 .prose th {
-  background: #121828;
-  border: 1px solid #1a2540;
+  background: #18181b;
+  border: 1px solid #27272a;
   padding: 0.5rem 0.75rem;
   text-align: left;
-  color: #e1e7f0;
+  color: #e4e4e7;
   font-weight: 600;
 }
 .prose td {
-  border: 1px solid #1a2540;
+  border: 1px solid #27272a;
   padding: 0.5rem 0.75rem;
 }
 .prose img {
@@ -152,6 +152,6 @@ body {
 }
 .prose hr {
   border: none;
-  border-top: 1px solid #1a2540;
+  border-top: 1px solid #27272a;
   margin: 1.5rem 0;
 }

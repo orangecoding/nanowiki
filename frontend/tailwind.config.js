@@ -4,16 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: '#080b14',
-        surface: '#0d1120',
-        elevated: '#121828',
-        'wiki-border': '#1a2540',
-        'wiki-border-bright': '#253660',
+        base: '#0c0c0e',
+        surface: '#111113',
+        elevated: '#18181b',
+        'wiki-border': '#27272a',
+        'wiki-border-bright': '#3f3f46',
         accent: '#f97316',
         'accent-dim': '#ea580c',
-        'wiki-text': '#e1e7f0',
-        'wiki-muted': '#8899bb',
-        'wiki-faint': '#3d5070',
+        'wiki-text': '#e4e4e7',
+        'wiki-muted': '#a1a1aa',
+        'wiki-faint': '#52525b',
       },
       fontFamily: {
         sans: ['Outfit', 'system-ui', 'sans-serif'],

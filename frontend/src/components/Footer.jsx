@@ -1,4 +1,4 @@
-const VERSION = '1.0.0';
+import { version } from '../../../package.json';
 
 export function Footer() {
   return (
@@ -6,7 +6,7 @@ export function Footer() {
       <span className="flex items-center gap-2 text-xs text-wiki-faint font-mono">
         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-elevated border border-wiki-border text-wiki-muted">
           <span className="text-wiki-faint">v</span>
-          {VERSION}
+          {version}
         </span>
       </span>
       <span className="text-xs text-wiki-faint">
