@@ -31,7 +31,7 @@
     "test:frontend": "yarn --cwd frontend test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "inst": "yarn install && yarn --cwd client install && yarn --cwd server install",
+    "inst": "yarn install && yarn --cwd frontend install && yarn --cwd server install",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
