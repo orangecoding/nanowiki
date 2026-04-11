@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "inst": "yarn install && yarn --cwd client install && yarn --cwd server install",
     "test": "vitest run"
   },
   "dependencies": {
