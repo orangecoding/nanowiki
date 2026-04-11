@@ -3,7 +3,7 @@ import { vi, it, expect, beforeEach } from 'vitest';
 
 beforeEach(() => {
   vi.resetModules();
-  vi.mock('../../src/api.js', () => ({
+  vi.doMock('../../src/api.js', () => ({
     getContent: vi.fn().mockResolvedValue('# Hello'),
     saveContent: vi.fn().mockResolvedValue({}),
   }));

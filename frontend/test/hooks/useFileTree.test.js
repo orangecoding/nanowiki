@@ -3,7 +3,7 @@ import { vi, it, expect, beforeEach } from 'vitest';
 
 beforeEach(() => {
   vi.resetModules();
-  vi.mock('../../src/api.js', () => ({
+  vi.doMock('../../src/api.js', () => ({
     getFiles: vi.fn().mockResolvedValue([{ type: 'file', name: 'readme.md', path: 'readme.md' }]),
     createEntry: vi.fn().mockResolvedValue({}),
     deleteEntry: vi.fn().mockResolvedValue(null),

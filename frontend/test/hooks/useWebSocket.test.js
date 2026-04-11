@@ -6,7 +6,9 @@ let mockWs;
 
 beforeEach(() => {
   mockWs = { send: vi.fn(), close: vi.fn(), readyState: 1 };
-  global.WebSocket = vi.fn(() => mockWs);
+  global.WebSocket = vi.fn(function () {
+    return mockWs;
+  });
 });
 
 it('calls onEvent when message arrives', () => {
