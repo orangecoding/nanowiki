@@ -1,12 +1,9 @@
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 import Link from '@tiptap/extension-link';
 import Strike from '@tiptap/extension-strike';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableHeader from '@tiptap/extension-table-header';
-import TableCell from '@tiptap/extension-table-cell';
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { createLowlight, common } from 'lowlight';
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -21,6 +18,7 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState })
   const [rawValue, setRawValue] = useState(content);
   const [imgAlt, setImgAlt] = useState('');
   const [imgSrc, setImgSrc] = useState('');
+  const [imageMenuVisible, setImageMenuVisible] = useState(false);
 
   // Stable refs so editorProps closure always has latest values
   const onImageDropRef = useRef(onImageDrop);
@@ -45,6 +43,15 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState })
     content,
     onUpdate: ({ editor }) => {
       onChange(editor.storage.markdown.getMarkdown());
+    },
+    onSelectionUpdate: ({ editor }) => {
+      const isImage = editor.isActive('image');
+      setImageMenuVisible(isImage);
+      if (isImage) {
+        const attrs = editor.getAttributes('image');
+        setImgSrc(attrs.src ?? '');
+        setImgAlt(attrs.alt ?? '');
+      }
     },
     editorProps: {
       attributes: { class: 'prose max-w-none focus:outline-none min-h-full px-8 py-6' },
@@ -125,57 +132,46 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState })
           <RawEditor value={rawValue} onChange={handleRawChange} />
         ) : (
           <>
-            {editor && (
-              <BubbleMenu
-                editor={editor}
-                shouldShow={() => editor.isActive('image')}
-                onShow={() => {
-                  const attrs = editor.getAttributes('image');
-                  setImgSrc(attrs.src ?? '');
-                  setImgAlt(attrs.alt ?? '');
-                }}
-                tippyOptions={{ placement: 'bottom', duration: 100 }}
-              >
-                <div className="flex items-center gap-1.5 bg-elevated border border-wiki-border rounded-md shadow-lg px-2 py-1.5 text-xs">
-                  <label className="text-wiki-faint shrink-0">Alt</label>
-                  <input
-                    value={imgAlt}
-                    onChange={(e) => setImgAlt(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
-                        editor.commands.focus();
-                      }
-                      e.stopPropagation();
-                    }}
-                    placeholder="alt text"
-                    className="bg-surface border border-wiki-border-bright rounded px-1.5 py-0.5 text-wiki-text outline-none w-28 font-mono"
-                  />
-                  <label className="text-wiki-faint shrink-0">Src</label>
-                  <input
-                    value={imgSrc}
-                    onChange={(e) => setImgSrc(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
-                        editor.commands.focus();
-                      }
-                      e.stopPropagation();
-                    }}
-                    placeholder="url"
-                    className="bg-surface border border-wiki-border-bright rounded px-1.5 py-0.5 text-wiki-text outline-none w-48 font-mono"
-                  />
-                  <button
-                    onClick={() => {
+            {imageMenuVisible && editor && (
+              <div className="flex items-center gap-1.5 bg-elevated border-b border-wiki-border px-2 py-1.5 text-xs">
+                <label className="text-wiki-faint shrink-0">Alt</label>
+                <input
+                  value={imgAlt}
+                  onChange={(e) => setImgAlt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
                       editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
                       editor.commands.focus();
-                    }}
-                    className="bg-accent/20 hover:bg-accent/30 text-accent px-2 py-0.5 rounded transition-colors shrink-0"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </BubbleMenu>
+                    }
+                    e.stopPropagation();
+                  }}
+                  placeholder="alt text"
+                  className="bg-surface border border-wiki-border-bright rounded px-1.5 py-0.5 text-wiki-text outline-none w-28 font-mono"
+                />
+                <label className="text-wiki-faint shrink-0">Src</label>
+                <input
+                  value={imgSrc}
+                  onChange={(e) => setImgSrc(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
+                      editor.commands.focus();
+                    }
+                    e.stopPropagation();
+                  }}
+                  placeholder="url"
+                  className="bg-surface border border-wiki-border-bright rounded px-1.5 py-0.5 text-wiki-text outline-none w-48 font-mono"
+                />
+                <button
+                  onClick={() => {
+                    editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
+                    editor.commands.focus();
+                  }}
+                  className="bg-accent/20 hover:bg-accent/30 text-accent px-2 py-0.5 rounded transition-colors shrink-0"
+                >
+                  Apply
+                </button>
+              </div>
             )}
             <EditorContent editor={editor} className="h-full" />
           </>
