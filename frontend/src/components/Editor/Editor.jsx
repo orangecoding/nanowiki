@@ -6,7 +6,7 @@ import Strike from '@tiptap/extension-strike';
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { createLowlight, common } from 'lowlight';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, startTransition } from 'react';
 import { Toolbar } from './Toolbar.jsx';
 import { RawEditor } from './RawEditor.jsx';
 import { ResizableImage } from './ResizableImage.js';
@@ -46,12 +46,14 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState })
     },
     onSelectionUpdate: ({ editor }) => {
       const isImage = editor.isActive('image');
-      setImageMenuVisible(isImage);
-      if (isImage) {
-        const attrs = editor.getAttributes('image');
-        setImgSrc(attrs.src ?? '');
-        setImgAlt(attrs.alt ?? '');
-      }
+      const attrs = isImage ? editor.getAttributes('image') : null;
+      startTransition(() => {
+        setImageMenuVisible(isImage);
+        if (attrs) {
+          setImgSrc(attrs.src ?? '');
+          setImgAlt(attrs.alt ?? '');
+        }
+      });
     },
     editorProps: {
       attributes: { class: 'prose max-w-none focus:outline-none min-h-full px-8 py-6' },

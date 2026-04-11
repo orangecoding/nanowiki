@@ -59,7 +59,10 @@ export async function build(opts = {}) {
   return fastify;
 }
 
-if (process.argv[1] === new URL(import.meta.url).pathname) {
+const isMain =
+  process.argv[1] === new URL(import.meta.url).pathname || process.argv[1]?.includes('ProcessContainerFork');
+
+if (isMain) {
   const { default: dotenv } = await import('dotenv');
   // Resolve .env from project root regardless of cwd
   dotenv.config({ path: new URL('../../.env', import.meta.url).pathname });
