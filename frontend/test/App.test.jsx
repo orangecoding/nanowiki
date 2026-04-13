@@ -7,6 +7,7 @@ vi.mock('../src/api.js', () => ({
   getContent: vi.fn().mockResolvedValue(''),
   saveContent: vi.fn().mockResolvedValue({}),
   uploadImage: vi.fn().mockResolvedValue({ urlPath: '' }),
+  getVersion: vi.fn().mockResolvedValue('0.0.0'),
 }));
 
 vi.mock('../src/hooks/useWebSocket.js', () => ({
