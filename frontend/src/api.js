@@ -40,6 +40,9 @@ export function uploadImage(mdPath, file) {
 
 export const searchFiles = (q) => request(`/api/search?q=${encodeURIComponent(q)}`);
 
+let _version;
+export const getVersion = () => (_version ??= request('/api/version').then((r) => r.version));
+
 export const deleteImage = (urlPath) => {
   // urlPath is like "/files/subdir/image.png" → strip prefix for API
   const relPath = urlPath.replace(/^\/files\//, '');

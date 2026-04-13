@@ -1,7 +1,9 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import Fastify from 'fastify';
+
+const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
 import cors from '@fastify/cors';
 import multipart from '@fastify/multipart';
 import staticFiles from '@fastify/static';
@@ -46,6 +48,8 @@ export async function build(opts = {}) {
       reply.status(404).send({ error: 'Not found' });
     });
   }
+
+  fastify.get('/api/version', () => ({ version }));
 
   await fastify.register(filesRoutes);
   await fastify.register(contentRoutes);
