@@ -14,6 +14,7 @@ export function FileLinkPicker({ editor, onClose }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const inputRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -24,10 +25,28 @@ export function FileLinkPicker({ editor, onClose }) {
       setResults([]);
       return;
     }
+    let aborted = false;
     searchFiles(query)
-      .then(setResults)
-      .catch(() => setResults([]));
+      .then((r) => {
+        if (!aborted) setResults(r);
+      })
+      .catch(() => {
+        if (!aborted) setResults([]);
+      });
+    return () => {
+      aborted = true;
+    };
   }, [query]);
+
+  useEffect(() => {
+    const handleMouseDown = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [onClose]);
 
   const insertLink = (path) => {
     const { from, to } = editor.state.selection;
@@ -64,7 +83,11 @@ export function FileLinkPicker({ editor, onClose }) {
   };
 
   return (
-    <div className="border-b border-wiki-border bg-elevated px-2 py-2 flex flex-col gap-1" onKeyDown={handleKeyDown}>
+    <div
+      ref={containerRef}
+      className="border-b border-wiki-border bg-elevated px-2 py-2 flex flex-col gap-1"
+      onKeyDown={handleKeyDown}
+    >
       <input
         ref={inputRef}
         value={query}

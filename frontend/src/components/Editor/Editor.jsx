@@ -169,7 +169,7 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
 
   return (
     <div className="flex flex-col h-full bg-base" onDragOver={(e) => e.preventDefault()}>
-      <Toolbar editor={editor} rawMode={rawMode} onToggleRaw={toggleRaw} savedState={savedState} />
+      <Toolbar key={filePath} editor={editor} rawMode={rawMode} onToggleRaw={toggleRaw} savedState={savedState} />
       <div className="flex-1 overflow-y-auto">
         {rawMode ? (
           <RawEditor value={rawValue} onChange={handleRawChange} />
