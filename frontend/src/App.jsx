@@ -12,6 +12,7 @@ import { useDialog } from './hooks/useDialog.js';
 import { useEditor } from './hooks/useEditor.js';
 import { useWebSocket } from './hooks/useWebSocket.js';
 import { searchFiles, uploadImage, deleteImage } from './api.js';
+import { flattenTree, resolveRelative } from './utils/fileLinks.js';
 
 const IconNewFile = () => (
   <svg
@@ -107,6 +108,40 @@ export default function App() {
 
   useWebSocket(handleWsEvent);
 
+  const handleNavigate = useCallback(
+    (href) => {
+      const paths = flattenTree(tree);
+
+      // Try relative to current file first
+      if (activePath) {
+        const relative = resolveRelative(href, activePath);
+        if (paths.includes(relative)) {
+          // Open all ancestor folders
+          const segments = relative.split('/');
+          for (let i = 1; i < segments.length; i++) {
+            openFolder(segments.slice(0, i).join('/'));
+          }
+          setActivePath(relative);
+          return;
+        }
+      }
+
+      // Fall back to root-relative
+      if (paths.includes(href)) {
+        const segments = href.split('/');
+        for (let i = 1; i < segments.length; i++) {
+          openFolder(segments.slice(0, i).join('/'));
+        }
+        setActivePath(href);
+        return;
+      }
+
+      // Not an internal file — open externally
+      window.open(href, '_blank', 'noopener,noreferrer');
+    },
+    [activePath, tree, openFolder],
+  );
+
   const handleSearch = useCallback(async (q) => {
     if (!q.trim()) {
       setSearchResults([]);
@@ -182,6 +217,7 @@ export default function App() {
       onChange={setContent}
       onImageDrop={handleImageDrop}
       savedState={savedState}
+      onNavigate={handleNavigate}
     />
   );
 

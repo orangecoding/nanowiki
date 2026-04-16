@@ -13,7 +13,7 @@ import { ResizableImage } from './ResizableImage.js';
 
 const lowlight = createLowlight(common);
 
-export function Editor({ filePath, content, onChange, onImageDrop, savedState }) {
+export function Editor({ filePath, content, onChange, onImageDrop, savedState, onNavigate }) {
   const [rawMode, setRawMode] = useState(false);
   const [rawValue, setRawValue] = useState(content);
   const [imgAlt, setImgAlt] = useState('');
@@ -24,6 +24,10 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState })
   const onImageDropRef = useRef(onImageDrop);
   useEffect(() => {
     onImageDropRef.current = onImageDrop;
+  });
+  const onNavigateRef = useRef(onNavigate);
+  useEffect(() => {
+    onNavigateRef.current = onNavigate;
   });
   const editorRef = useRef(null);
 
@@ -57,6 +61,16 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState })
     },
     editorProps: {
       attributes: { class: 'prose max-w-none focus:outline-none min-h-full px-8 py-6' },
+      handleClick(view, pos, event) {
+        const target = event.target.closest('a');
+        if (!target) return false;
+        const href = target.getAttribute('href');
+        // Only intercept .md paths without a protocol (not https://, mailto:, etc.)
+        if (!href || href.includes('://') || !href.endsWith('.md')) return false;
+        event.preventDefault();
+        onNavigateRef.current?.(href);
+        return true;
+      },
       // Intercept drop at ProseMirror level to prevent default handling interfering
       handleDrop(view, event) {
         const files = [...(event.dataTransfer?.files ?? [])];
