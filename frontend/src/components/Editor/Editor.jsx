@@ -67,8 +67,9 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
         const href = target.getAttribute('href');
         // Only intercept .md paths without a protocol (not https://, mailto:, etc.)
         if (!href || href.includes('://') || !href.endsWith('.md')) return false;
+        if (!onNavigateRef.current) return false;
         event.preventDefault();
-        onNavigateRef.current?.(href);
+        onNavigateRef.current(href);
         return true;
       },
       // Intercept drop at ProseMirror level to prevent default handling interfering
