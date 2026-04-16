@@ -52,16 +52,18 @@ export function FileLinkPicker({ editor, onClose }) {
     const { from, to } = editor.state.selection;
     const selectedText = editor.state.doc.textBetween(from, to);
     const title = selectedText || titleFromPath(path);
+    // Encode spaces so the href survives markdown round-trips (spaces break URL parsing)
+    const href = encodeURI(path);
 
     if (selectedText) {
       // Wrap the selected text with a link mark
-      editor.chain().focus().setLink({ href: path }).run();
+      editor.chain().focus().setLink({ href }).run();
     } else {
       // Insert a new text node with a link mark at cursor
       // (must use the PM schema directly — insertContent with a markdown string
       //  won't produce a link mark in TipTap's internal PM document)
       const { schema } = editor.state;
-      const linkMark = schema.marks.link.create({ href: path });
+      const linkMark = schema.marks.link.create({ href });
       const textNode = schema.text(title, [linkMark]);
       editor
         .chain()

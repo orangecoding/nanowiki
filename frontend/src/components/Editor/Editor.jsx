@@ -77,7 +77,7 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
         if (!href || href.includes(':') || !href.endsWith('.md')) return false;
         if (!onNavigateRef.current) return false;
         event.preventDefault();
-        onNavigateRef.current(href);
+        onNavigateRef.current(decodeURI(href));
         return true;
       },
       // Intercept drop at ProseMirror level to prevent default handling interfering
@@ -91,8 +91,9 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
           if (pos) {
             // Insert a proper ProseMirror text node with a link mark
             // (not raw markdown text — TipTap stores a PM document internally)
+            // Encode spaces so the href survives markdown round-trips (spaces break URL parsing)
             const { schema } = view.state;
-            const linkMark = schema.marks.link.create({ href: droppedFilePath });
+            const linkMark = schema.marks.link.create({ href: encodeURI(droppedFilePath) });
             const textNode = schema.text(title, [linkMark]);
             view.dispatch(view.state.tr.insert(pos.pos, textNode));
           }
