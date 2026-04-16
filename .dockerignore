@@ -21,3 +21,4 @@ README.md
 LICENSE
 docker-compose.yml
 *.log
+config.json
