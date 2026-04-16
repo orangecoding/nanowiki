@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 by Christian Kellner.
+ * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
+ */
+
 import { getTree, createFile, createFolder, renameEntry, deleteEntry, listMdFiles } from '../services/fileSystem.js';
 import { removeIndex } from '../services/search.js';
 

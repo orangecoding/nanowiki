@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 by Christian Kellner.
+ * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
+ */
+
 import { render } from '@testing-library/react';
 import { ResizableSplit } from '../../src/components/ResizableSplit.jsx';
 

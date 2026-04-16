@@ -34,12 +34,15 @@
     "inst": "yarn install && yarn --cwd frontend install && yarn --cwd backend install",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "copyright": "node ./tools/copyright.js",
+    "release": "node ./tools/release/release.js"
   },
   "lint-staged": {
     "**/*.{js,jsx}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "yarn copyright"
     ],
     "**/*.{json,css,md}": "prettier --write"
   },

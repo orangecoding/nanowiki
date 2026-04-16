@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 by Christian Kellner.
+ * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
+ */
+
 import { useState, useCallback } from 'react';
 import { ResizableSplit } from './components/ResizableSplit.jsx';
 import { FileTree } from './components/FileTree/FileTree.jsx';

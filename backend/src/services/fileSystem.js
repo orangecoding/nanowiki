@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 by Christian Kellner.
+ * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
+ */
+
 import { promises as fs } from 'node:fs';
 import { join, resolve, relative, extname, dirname } from 'node:path';
 import { config } from '../config.js';
