@@ -37,7 +37,14 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
       StarterKit.configure({ codeBlock: false }),
       Markdown,
       Strike,
-      Link.configure({ openOnClick: false }),
+      Link.configure({
+        openOnClick: false,
+        isAllowedUri: (url, ctx) => {
+          // Allow relative file paths (no colon = not an absolute URI scheme)
+          if (!url.includes(':')) return true;
+          return ctx.defaultValidate(url);
+        },
+      }),
       ResizableImage,
       Table.configure({ resizable: false }),
       TableRow,
@@ -76,16 +83,16 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
       // Intercept drop at ProseMirror level to prevent default handling interfering
       handleDrop(view, event) {
         // Check for internal file drag first
-        const filePath = event.dataTransfer?.getData('application/x-nanowiki-path');
-        if (filePath) {
+        const droppedFilePath = event.dataTransfer?.getData('application/x-nanowiki-path');
+        if (droppedFilePath) {
           event.preventDefault();
-          const title = titleFromPath(filePath);
+          const title = titleFromPath(droppedFilePath);
           const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
           if (pos) {
             // Insert a proper ProseMirror text node with a link mark
             // (not raw markdown text — TipTap stores a PM document internally)
             const { schema } = view.state;
-            const linkMark = schema.marks.link.create({ href: filePath });
+            const linkMark = schema.marks.link.create({ href: droppedFilePath });
             const textNode = schema.text(title, [linkMark]);
             view.dispatch(view.state.tr.insert(pos.pos, textNode));
           }

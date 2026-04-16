@@ -103,9 +103,9 @@ function NodeRow({ node, depth, activePath, onOpen, onCreate, onRename, onDelete
     <>
       <div
         data-active={isActive ? '' : undefined}
-        draggable={!isFolder}
+        draggable={!isFolder && !renaming}
         onDragStart={
-          !isFolder
+          !isFolder && !renaming
             ? (e) => {
                 e.dataTransfer.setData('application/x-nanowiki-path', node.path);
                 e.dataTransfer.effectAllowed = 'copy';
