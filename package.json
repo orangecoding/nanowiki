@@ -1,6 +1,6 @@
 {
   "name": "nanowiki",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A minimalist local wiki: no login, no cloud, just Markdown files. Fulltext search included.",
   "author": "Christian Kellner",
   "license": "Apache-2.0",
