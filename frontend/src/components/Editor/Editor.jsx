@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback, useRef, startTransition } from 'react
 import { Toolbar } from './Toolbar.jsx';
 import { RawEditor } from './RawEditor.jsx';
 import { ResizableImage } from './ResizableImage.js';
+import { titleFromPath } from '../../utils/fileLinks.js';
 
 const lowlight = createLowlight(common);
 
@@ -74,6 +75,24 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
       },
       // Intercept drop at ProseMirror level to prevent default handling interfering
       handleDrop(view, event) {
+        // Check for internal file drag first
+        const filePath = event.dataTransfer?.getData('application/x-nanowiki-path');
+        if (filePath) {
+          event.preventDefault();
+          const title = titleFromPath(filePath);
+          const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+          if (pos) {
+            // Insert a proper ProseMirror text node with a link mark
+            // (not raw markdown text — TipTap stores a PM document internally)
+            const { schema } = view.state;
+            const linkMark = schema.marks.link.create({ href: filePath });
+            const textNode = schema.text(title, [linkMark]);
+            view.dispatch(view.state.tr.insert(pos.pos, textNode));
+          }
+          return true;
+        }
+
+        // Existing image drop logic
         const files = [...(event.dataTransfer?.files ?? [])];
         const images = files.filter((f) => f.type.startsWith('image/'));
         if (images.length === 0) return false;
