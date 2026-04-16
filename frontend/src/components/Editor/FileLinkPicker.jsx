@@ -92,6 +92,9 @@ export function FileLinkPicker({ editor, onClose }) {
     if (e.key === 'Escape') {
       e.preventDefault();
       onClose();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      insertLink(results[index].path);
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       buttonRefs.current[index + 1]?.focus();
@@ -126,7 +129,7 @@ export function FileLinkPicker({ editor, onClose }) {
                   insertLink(r.path);
                 }}
                 onKeyDown={(e) => handleButtonKeyDown(e, i)}
-                className="w-full text-left px-2 py-1 text-sm rounded hover:bg-surface text-wiki-muted hover:text-wiki-text transition-colors font-mono truncate"
+                className="w-full text-left px-2 py-1 text-sm rounded hover:bg-surface text-wiki-muted hover:text-wiki-text transition-colors font-mono truncate focus:outline-none focus:bg-accent/10 focus:text-accent focus:ring-1 focus:ring-accent/50"
               >
                 {r.path}
               </button>
