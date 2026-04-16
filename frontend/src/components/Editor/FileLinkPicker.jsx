@@ -15,6 +15,7 @@ export function FileLinkPicker({ editor, onClose }) {
   const [results, setResults] = useState([]);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
+  const buttonRefs = useRef([]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -77,31 +78,46 @@ export function FileLinkPicker({ editor, onClose }) {
     onClose();
   };
 
-  const handleKeyDown = (e) => {
+  const handleInputKeyDown = (e) => {
     if (e.key === 'Escape') {
       e.preventDefault();
       onClose();
+    } else if (e.key === 'ArrowDown' && buttonRefs.current[0]) {
+      e.preventDefault();
+      buttonRefs.current[0].focus();
+    }
+  };
+
+  const handleButtonKeyDown = (e, index) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      buttonRefs.current[index + 1]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (index === 0) inputRef.current?.focus();
+      else buttonRefs.current[index - 1]?.focus();
     }
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="border-b border-wiki-border bg-elevated px-2 py-2 flex flex-col gap-1"
-      onKeyDown={handleKeyDown}
-    >
+    <div ref={containerRef} className="border-b border-wiki-border bg-elevated px-2 py-2 flex flex-col gap-1">
       <input
         ref={inputRef}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleInputKeyDown}
         placeholder="Search files…"
         className="bg-surface border border-wiki-border-bright rounded px-2 py-1 text-sm text-wiki-text outline-none w-full font-mono"
       />
       {results.length > 0 && (
         <ul className="max-h-48 overflow-y-auto">
-          {results.map((r) => (
+          {results.map((r, i) => (
             <li key={r.path}>
               <button
+                ref={(el) => (buttonRefs.current[i] = el)}
                 type="button"
                 onMouseDown={(e) => {
                   // mousedown fires before blur, so we prevent the input losing focus
@@ -109,6 +125,7 @@ export function FileLinkPicker({ editor, onClose }) {
                   e.preventDefault();
                   insertLink(r.path);
                 }}
+                onKeyDown={(e) => handleButtonKeyDown(e, i)}
                 className="w-full text-left px-2 py-1 text-sm rounded hover:bg-surface text-wiki-muted hover:text-wiki-text transition-colors font-mono truncate"
               >
                 {r.path}
