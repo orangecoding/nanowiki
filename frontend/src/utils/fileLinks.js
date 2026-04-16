@@ -29,8 +29,9 @@ export function resolveRelative(href, currentFilePath) {
   const parts = base.split('/');
   const result = [];
   for (const part of parts) {
-    if (part === '..') result.pop();
-    else if (part !== '.') result.push(part);
+    if (part === '..') {
+      if (result.length > 0) result.pop();
+    } else if (part !== '.') result.push(part);
   }
   return result.join('/');
 }

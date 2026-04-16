@@ -35,6 +35,9 @@ describe('resolveRelative', () => {
   it('resolves a same-directory dot-prefix', () => {
     expect(resolveRelative('./other.md', 'notes/project.md')).toBe('notes/other.md');
   });
+  it('does not underflow when .. traverses above root', () => {
+    expect(resolveRelative('../../escape.md', 'a/b.md')).toBe('escape.md');
+  });
 });
 
 describe('flattenTree', () => {
