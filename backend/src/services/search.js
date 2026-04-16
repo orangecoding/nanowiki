@@ -29,14 +29,17 @@ function indexDir(dir, base) {
     } else if (entry.name.endsWith('.md')) {
       const rel = full.slice(base.length + 1);
       const content = readFileSync(full, 'utf8');
-      db.prepare('INSERT INTO files_fts(path, content) VALUES (?, ?)').run(rel, content);
+      // Prepend the filename (without extension) so searches match file names too
+      const stem = entry.name.replace(/\.md$/, '');
+      db.prepare('INSERT INTO files_fts(path, content) VALUES (?, ?)').run(rel, `${stem}\n${content}`);
     }
   }
 }
 
 export function upsertIndex(path, content) {
+  const stem = path.split('/').pop().replace(/\.md$/, '');
   db.prepare('DELETE FROM files_fts WHERE path = ?').run(path);
-  db.prepare('INSERT INTO files_fts(path, content) VALUES (?, ?)').run(path, content);
+  db.prepare('INSERT INTO files_fts(path, content) VALUES (?, ?)').run(path, `${stem}\n${content}`);
 }
 
 export function removeIndex(path) {
