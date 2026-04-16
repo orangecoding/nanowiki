@@ -17,6 +17,9 @@ describe('titleFromPath', () => {
   it('handles a path with directories - uses only the filename', () => {
     expect(titleFromPath('docs/meeting-notes.md')).toBe('Meeting Notes');
   });
+  it('capitalizes every word in a multi-word title', () => {
+    expect(titleFromPath('my-long-file-name.md')).toBe('My Long File Name');
+  });
 });
 
 describe('resolveRelative', () => {

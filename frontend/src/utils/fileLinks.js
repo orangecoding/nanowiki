@@ -7,7 +7,7 @@
  * "README.md"             → "README"
  */
 export function titleFromPath(path) {
-  const filename = path.split('/').pop() ?? path;
+  const filename = path.split('/').pop();
   const stem = filename.replace(/\.md$/i, '');
   const spaced = stem.replace(/[-_]/g, ' ');
   return spaced
