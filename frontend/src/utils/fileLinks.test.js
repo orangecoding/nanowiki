@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { titleFromPath, resolveRelative, flattenTree } from '../../src/utils/fileLinks.js';
+import { titleFromPath, resolveRelative, flattenTree } from './fileLinks.js';
 
 describe('titleFromPath', () => {
   it('strips .md and capitalizes first letter', () => {
