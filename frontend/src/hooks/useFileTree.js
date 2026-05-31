@@ -31,6 +31,7 @@ export function useFileTree({ onError, showConfirm, showPrompt, onCreated } = {}
         await api.createEntry(type, path);
         await refresh();
         if (parentPath) onCreated?.(parentPath);
+        return path;
       } catch (err) {
         onError?.(`Failed to create ${type}: ${err.message}`);
       }
@@ -64,5 +65,20 @@ export function useFileTree({ onError, showConfirm, showPrompt, onCreated } = {}
     [refresh, onError, showConfirm],
   );
 
-  return { tree, refresh, create, rename, remove };
+  const move = useCallback(
+    async (path, targetFolderPath) => {
+      const name = path.split('/').pop();
+      const newPath = targetFolderPath ? `${targetFolderPath}/${name}` : name;
+      if (newPath === path) return;
+      try {
+        await api.renameEntry(path, newPath);
+        await refresh();
+      } catch (err) {
+        onError?.(`Failed to move: ${err.message}`);
+      }
+    },
+    [refresh, onError],
+  );
+
+  return { tree, refresh, create, rename, remove, move };
 }

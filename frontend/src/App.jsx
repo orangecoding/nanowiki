@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import rootPkg from '../../package.json';
 import { FileTree } from './components/FileTree/FileTree.jsx';
 import { Editor } from './components/Editor/Editor.jsx';
 import { extractHeadings } from './components/MetaRail.jsx';
@@ -40,7 +41,7 @@ function Brand({ small }) {
         <span className="n">Nano</span>
         <span className="w">Wiki</span>
       </span>
-      {!small && <span className="brand__ver mono">v2.0</span>}
+      {!small && <span className="brand__ver mono">v{rootPkg.version}</span>}
     </div>
   );
 }
@@ -78,7 +79,7 @@ export default function App() {
   const { dialog, showConfirm, showPrompt, handleConfirm, handleCancel, handleSubmit } = useDialog();
   const [openFolders, toggleFolder, openFolder] = useOpenFolders();
 
-  const { tree, refresh, create, rename, remove } = useFileTree({
+  const { tree, refresh, create, rename, remove, move } = useFileTree({
     onError: showToast,
     showConfirm,
     showPrompt,
@@ -115,6 +116,31 @@ export default function App() {
     localStorage.setItem('nw-sbw', String(sidebarWidth));
   }, [sidebarWidth]);
 
+  const openFile = useCallback(
+    (path) => {
+      setRecentPaths((prev) => {
+        const next = [path, ...prev.filter((p) => p !== path)].slice(0, 20);
+        localStorage.setItem('nw-recents', JSON.stringify(next));
+        return next;
+      });
+      const segments = path.split('/');
+      for (let i = 1; i < segments.length; i++) openFolder(segments.slice(0, i).join('/'));
+      setActivePath(path);
+      setPaletteOpen(false);
+      setDrawerOpen(false);
+      setSheet(null);
+    },
+    [openFolder],
+  );
+
+  const handleCreate = useCallback(
+    async (type, parentPath) => {
+      const createdPath = await create(type, parentPath);
+      if (type === 'file' && createdPath) openFile(createdPath);
+    },
+    [create, openFile],
+  );
+
   // Keyboard shortcuts
   useEffect(() => {
     const onKey = (e) => {
@@ -122,6 +148,10 @@ export default function App() {
       if ((e.metaKey || e.ctrlKey) && (k === 'k' || k === 'f')) {
         e.preventDefault();
         setPaletteOpen(true);
+      } else if (e.ctrlKey && !e.metaKey && k === 'n') {
+        e.preventDefault();
+        const parentPath = activePath ? activePath.split('/').slice(0, -1).join('/') || null : null;
+        handleCreate('file', parentPath);
       } else if (e.key === 'Escape') {
         setPaletteOpen(false);
         setHistoryOpen(false);
@@ -132,7 +162,7 @@ export default function App() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [activePath, handleCreate]);
 
   // WebSocket events
   const handleWsEvent = useCallback(
@@ -171,23 +201,6 @@ export default function App() {
     document.body.style.userSelect = 'none';
   }, []);
 
-  const openFile = useCallback(
-    (path) => {
-      setRecentPaths((prev) => {
-        const next = [path, ...prev.filter((p) => p !== path)].slice(0, 20);
-        localStorage.setItem('nw-recents', JSON.stringify(next));
-        return next;
-      });
-      const segments = path.split('/');
-      for (let i = 1; i < segments.length; i++) openFolder(segments.slice(0, i).join('/'));
-      setActivePath(path);
-      setPaletteOpen(false);
-      setDrawerOpen(false);
-      setSheet(null);
-    },
-    [openFolder],
-  );
-
   const handleNavigate = useCallback(
     (href) => {
       const paths = flattenTree(tree);
@@ -223,12 +236,12 @@ export default function App() {
     (id) => {
       setPaletteOpen(false);
       setSheet(null);
-      if (id === 'new-file') create('file', null);
-      else if (id === 'new-folder') create('folder', null);
+      if (id === 'new-file') handleCreate('file', null);
+      else if (id === 'new-folder') handleCreate('folder', null);
       else if (id === 'history') setHistoryOpen(true);
       else if (id === 'settings') setSettingsOpen(true);
     },
-    [create],
+    [handleCreate],
   );
 
   const flatFiles = flattenTree(tree);
@@ -238,10 +251,10 @@ export default function App() {
       <div className="sidebar__head">
         <span className="sidebar__title">Workspace</span>
         <div className="sidebar__actions">
-          <button className="iconbtn" title="New page" onClick={() => create('file', null)}>
+          <button className="iconbtn" title="New page" onClick={() => handleCreate('file', null)}>
             <Icon name="newFile" size={16} />
           </button>
-          <button className="iconbtn" title="New folder" onClick={() => create('folder', null)}>
+          <button className="iconbtn" title="New folder" onClick={() => handleCreate('folder', null)}>
             <Icon name="newFolder" size={16} />
           </button>
         </div>
@@ -251,9 +264,10 @@ export default function App() {
           tree={tree}
           activePath={activePath}
           onOpen={openFile}
-          onCreate={create}
+          onCreate={handleCreate}
           onRename={rename}
           onDelete={remove}
+          onMove={move}
           openFolders={openFolders}
           toggleFolder={toggleFolder}
         />
@@ -343,7 +357,7 @@ export default function App() {
             <EmptyState
               onOpenFile={openFile}
               onOpenPalette={() => setPaletteOpen(true)}
-              onCreate={create}
+              onCreate={handleCreate}
               recentPaths={recentPaths}
             />
           ) : (
@@ -412,9 +426,10 @@ export default function App() {
                 tree={tree}
                 activePath={activePath}
                 onOpen={openFile}
-                onCreate={create}
+                onCreate={handleCreate}
                 onRename={rename}
                 onDelete={remove}
+                onMove={move}
                 openFolders={openFolders}
                 toggleFolder={toggleFolder}
               />

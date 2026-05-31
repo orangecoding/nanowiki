@@ -18,9 +18,11 @@ export function extractHeadings(markdown) {
   const headings = [];
   const lines = markdown.split('\n');
   for (const line of lines) {
-    const h2 = line.match(/^## (.+)/);
-    const h3 = line.match(/^### (.+)/);
-    if (h2) headings.push({ level: 2, text: h2[1].trim(), id: slug(h2[1].trim()) });
+    const h1 = line.match(/^# (.+)/);
+    const h2 = !h1 && line.match(/^## (.+)/);
+    const h3 = !h1 && !h2 && line.match(/^### (.+)/);
+    if (h1) headings.push({ level: 1, text: h1[1].trim(), id: slug(h1[1].trim()) });
+    else if (h2) headings.push({ level: 2, text: h2[1].trim(), id: slug(h2[1].trim()) });
     else if (h3) headings.push({ level: 3, text: h3[1].trim(), id: slug(h3[1].trim()) });
   }
   return headings;
@@ -42,7 +44,14 @@ export function MetaRail({ filePath, content, tree, onNavigate, canvasRef }) {
     (id) => {
       const canvas = canvasRef?.current;
       if (!canvas) return;
-      const el = canvas.querySelector(`[id="${CSS.escape(id)}"]`);
+      const headings = canvas.querySelectorAll('h1, h2, h3');
+      let el = null;
+      for (const h of headings) {
+        if (slug(h.textContent.trim()) === id) {
+          el = h;
+          break;
+        }
+      }
       if (!el) return;
       const top = el.getBoundingClientRect().top - canvas.getBoundingClientRect().top + canvas.scrollTop - 72;
       canvas.scrollTo({ top, behavior: 'smooth' });
@@ -60,7 +69,7 @@ export function MetaRail({ filePath, content, tree, onNavigate, canvasRef }) {
               <a
                 key={h.id}
                 href={`#${h.id}`}
-                className={`${h.level === 3 ? 'lvl3' : ''}${activeId === h.id ? ' active' : ''}`}
+                className={`${h.level === 2 ? 'lvl2' : h.level === 3 ? 'lvl3' : ''}${activeId === h.id ? ' active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault();
                   jumpTo(h.id);

@@ -411,6 +411,15 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.row--drop-target {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--text);
+}
+.tree--drop-target {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: var(--radius-sm);
+}
 .tree__group {
   padding-left: 14px;
   display: flex;
@@ -639,6 +648,8 @@ button {
   max-width: var(--reading-w);
   margin: 0 auto;
   padding: 36px 24px 96px;
+  min-height: 100%;
+  cursor: text;
 }
 
 /* document head */
@@ -929,6 +940,9 @@ button {
 .outline a:hover {
   color: var(--text);
   background: var(--bg-elevated);
+}
+.outline a.lvl2 {
+  padding-left: 12px;
 }
 .outline a.lvl3 {
   padding-left: 22px;

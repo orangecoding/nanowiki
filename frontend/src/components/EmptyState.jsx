@@ -17,7 +17,7 @@ export function EmptyState({ onOpenFile, onOpenPalette, onCreate, recentPaths = 
         <div className="empty__actions">
           <button className="btn btn--primary" onClick={() => onCreate('file', null)}>
             <Icon name="newFile" size={15} />
-            New page
+            New File
           </button>
           <button className="btn" onClick={onOpenPalette}>
             <Icon name="search" size={15} />

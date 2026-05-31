@@ -238,6 +238,12 @@ export function Editor({
     if (rawMode) setRawValue(content);
   }, [filePath]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!editor || rawMode) return;
+    const timer = setTimeout(() => editor.commands.focus('start'), 80);
+    return () => clearTimeout(timer);
+  }, [filePath]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const toggleRaw = useCallback(() => {
     if (!rawMode) {
       const md = editor?.storage.markdown.getMarkdown() ?? '';
@@ -395,7 +401,15 @@ export function Editor({
       )}
 
       {/* Canvas */}
-      <div className="canvas" ref={canvasRef}>
+      <div
+        className="canvas"
+        ref={canvasRef}
+        onClick={(e) => {
+          if (!rawMode && editor && !e.target.closest('.ProseMirror')) {
+            editor.commands.focus('end');
+          }
+        }}
+      >
         {rawMode ? (
           <RawEditor value={rawValue} onChange={handleRawChange} />
         ) : (

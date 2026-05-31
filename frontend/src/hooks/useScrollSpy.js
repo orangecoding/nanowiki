@@ -5,6 +5,13 @@
 
 import { useState, useEffect } from 'react';
 
+function slug(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 export function useScrollSpy(canvasRef, headingIds) {
   const [activeId, setActiveId] = useState(null);
 
@@ -19,9 +26,10 @@ export function useScrollSpy(canvasRef, headingIds) {
       const canvasTop = canvas.getBoundingClientRect().top;
       const offset = canvasTop + 96;
       let current = null;
-      for (const id of headingIds) {
-        const el = canvas.querySelector(`[id="${CSS.escape(id)}"]`);
-        if (el && el.getBoundingClientRect().top <= offset) {
+      const domHeadings = canvas.querySelectorAll('h1, h2, h3');
+      for (const el of domHeadings) {
+        const id = slug(el.textContent.trim());
+        if (headingIds.includes(id) && el.getBoundingClientRect().top <= offset) {
           current = id;
         }
       }

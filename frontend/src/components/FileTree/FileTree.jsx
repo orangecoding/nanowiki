@@ -7,10 +7,22 @@ import { useState } from 'react';
 import { Icon } from '../Icon.jsx';
 import { ContextMenu } from './ContextMenu.jsx';
 
-function NodeRow({ node, activePath, onOpen, onCreate, onRename, onDelete, openFolders, toggleFolder }) {
+const DRAG_TYPE = 'application/x-nanowiki-path';
+
+function isDescendant(draggedPath, targetPath) {
+  return targetPath === draggedPath || targetPath.startsWith(draggedPath + '/');
+}
+
+function parentFolder(path) {
+  const parts = path.split('/');
+  return parts.length > 1 ? parts.slice(0, -1).join('/') : null;
+}
+
+function NodeRow({ node, activePath, onOpen, onCreate, onRename, onDelete, onMove, openFolders, toggleFolder }) {
   const [renaming, setRenaming] = useState(false);
   const [renameVal, setRenameVal] = useState(node.name);
   const [menu, setMenu] = useState(null);
+  const [dropTarget, setDropTarget] = useState(false);
   const isFolder = node.type === 'folder';
   const isOpen = isFolder && openFolders.has(node.path);
   const isActive = node.path === activePath;
@@ -62,20 +74,50 @@ function NodeRow({ node, activePath, onOpen, onCreate, onRename, onDelete, openF
         { label: 'Delete', danger: true, onClick: () => onDelete(node.path) },
       ];
 
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData(DRAG_TYPE, node.path);
+    e.dataTransfer.effectAllowed = 'move';
+    e.stopPropagation();
+  };
+
+  const handleDragOver = (e) => {
+    if (!isFolder) return;
+    const hasDragType = e.dataTransfer.types.includes(DRAG_TYPE);
+    if (!hasDragType) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    setDropTarget(true);
+  };
+
+  const handleDragLeave = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setDropTarget(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    if (!isFolder) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTarget(false);
+    const draggedPath = e.dataTransfer.getData(DRAG_TYPE);
+    if (!draggedPath) return;
+    if (isDescendant(draggedPath, node.path)) return;
+    if (parentFolder(draggedPath) === node.path) return;
+    onMove(draggedPath, node.path);
+  };
+
   return (
     <>
       <button
-        className={`row row--${isFolder ? 'folder' : 'file'}${isActive ? ' active' : ''}`}
+        className={`row row--${isFolder ? 'folder' : 'file'}${isActive ? ' active' : ''}${dropTarget ? ' row--drop-target' : ''}`}
         data-active={isActive ? '' : undefined}
-        draggable={!isFolder && !renaming}
-        onDragStart={
-          !isFolder && !renaming
-            ? (e) => {
-                e.dataTransfer.setData('application/x-nanowiki-path', node.path);
-                e.dataTransfer.effectAllowed = 'copy';
-              }
-            : undefined
-        }
+        draggable={!renaming}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
       >
@@ -143,6 +185,7 @@ function NodeRow({ node, activePath, onOpen, onCreate, onRename, onDelete, openF
               onCreate={onCreate}
               onRename={onRename}
               onDelete={onDelete}
+              onMove={onMove}
               openFolders={openFolders}
               toggleFolder={toggleFolder}
             />
@@ -164,14 +207,44 @@ export function FileTree({
   onCreate,
   onRename,
   onDelete,
+  onMove,
   openFolders = EMPTY_SET,
   toggleFolder = () => {},
 }) {
   const [rootMenu, setRootMenu] = useState(null);
+  const [rootDropTarget, setRootDropTarget] = useState(false);
 
   const handleRootContextMenu = (e) => {
     e.preventDefault();
     setRootMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleRootDragOver = (e) => {
+    const hasDragType = e.dataTransfer.types.includes(DRAG_TYPE);
+    if (!hasDragType) return;
+    // Only show root drop target if dragging over the tree background, not over a node
+    const overRow = e.target.closest('.row');
+    if (overRow) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setRootDropTarget(true);
+  };
+
+  const handleRootDragLeave = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setRootDropTarget(false);
+    }
+  };
+
+  const handleRootDrop = (e) => {
+    setRootDropTarget(false);
+    const overRow = e.target.closest('.row');
+    if (overRow) return;
+    const draggedPath = e.dataTransfer.getData(DRAG_TYPE);
+    if (!draggedPath) return;
+    if (!draggedPath.includes('/')) return; // already at root
+    e.preventDefault();
+    onMove(draggedPath, null);
   };
 
   const rootMenuItems = [
@@ -180,7 +253,13 @@ export function FileTree({
   ];
 
   return (
-    <div className="tree" onContextMenu={handleRootContextMenu}>
+    <div
+      className={`tree${rootDropTarget ? ' tree--drop-target' : ''}`}
+      onContextMenu={handleRootContextMenu}
+      onDragOver={handleRootDragOver}
+      onDragLeave={handleRootDragLeave}
+      onDrop={handleRootDrop}
+    >
       {tree.length === 0 && (
         <p style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text-faint)' }}>
           No files yet. Right-click to create.
@@ -195,6 +274,7 @@ export function FileTree({
           onCreate={onCreate}
           onRename={onRename}
           onDelete={onDelete}
+          onMove={onMove}
           openFolders={openFolders}
           toggleFolder={toggleFolder}
         />

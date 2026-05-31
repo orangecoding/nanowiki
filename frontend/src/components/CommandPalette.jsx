@@ -170,6 +170,7 @@ export function CommandPalette({ tree, activePath: _activePath, onClose, onOpenF
           <Icon name={isActions ? 'bolt' : 'search'} size={18} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           <input
             ref={inputRef}
+            autoFocus
             className="palette__input"
             placeholder="Search pages, or type > for actions…"
             value={q}
