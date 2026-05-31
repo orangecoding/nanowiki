@@ -1,6 +1,6 @@
 {
   "name": "nanowiki",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A minimalist local wiki: no login, no cloud, just Markdown files. Fulltext search included.",
   "author": "Christian Kellner",
   "license": "Apache-2.0",
@@ -51,7 +51,7 @@
     "eslint": "latest",
     "eslint-config-prettier": "latest",
     "eslint-plugin-react": "latest",
-    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "latest",
     "husky": "latest",
     "lint-staged": "latest",

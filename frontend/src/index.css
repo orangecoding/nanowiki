@@ -56,14 +56,22 @@ body {
 .prose h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
   color: #e4e4e7;
+}
+.prose h2:first-child {
+  margin-top: 0;
 }
 .prose h3 {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
   color: #e4e4e7;
+}
+.prose h3:first-child {
+  margin-top: 0;
 }
 .prose p {
   margin-bottom: 0.75rem;
@@ -81,6 +89,9 @@ body {
 }
 .prose li {
   margin-bottom: 0.25rem;
+}
+.prose li > p {
+  margin-bottom: 0;
 }
 .prose code {
   background: #27272a;
