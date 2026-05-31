@@ -227,7 +227,7 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen bg-base text-wiki-text overflow-hidden flex flex-col">
+    <div className="h-full bg-base text-wiki-text overflow-hidden flex flex-col">
       <div className="flex-1 min-h-0 overflow-hidden">
         <ResizableSplit sidebar={sidebar} content={editorPanel} />
       </div>

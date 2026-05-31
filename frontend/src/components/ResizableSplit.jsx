@@ -45,6 +45,13 @@ export function ResizableSplit({ sidebar, content }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const dragging = useRef(false);
 
+  useEffect(() => {
+    document.body.style.overflow = mobileSidebarOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileSidebarOpen]);
+
   const onMouseDown = useCallback((e) => {
     e.preventDefault();
     dragging.current = true;
@@ -99,16 +106,15 @@ export function ResizableSplit({ sidebar, content }) {
       {mobileSidebarOpen && (
         <>
           <div className="md:hidden fixed inset-0 z-20 bg-black/50" onClick={() => setMobileSidebarOpen(false)} />
-          <div className="md:hidden fixed top-0 left-0 bottom-0 z-30 w-72 overflow-hidden flex flex-col">
-            <div className="absolute top-3 right-3 z-10">
-              <button
-                onClick={() => setMobileSidebarOpen(false)}
-                className="text-wiki-faint hover:text-accent p-1.5 rounded hover:bg-elevated transition-colors"
-              >
-                <IconClose />
-              </button>
-            </div>
-            {sidebar}
+          <div className="md:hidden fixed top-0 left-0 bottom-0 z-30 w-[75vw] max-w-xs flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex-1 overflow-hidden min-h-0">{sidebar}</div>
+            <button
+              onClick={() => setMobileSidebarOpen(false)}
+              className="flex-shrink-0 flex items-center justify-center gap-2 py-3 bg-elevated border-t border-wiki-border text-wiki-faint hover:text-accent text-sm transition-colors"
+            >
+              <IconClose />
+              Close
+            </button>
           </div>
         </>
       )}
