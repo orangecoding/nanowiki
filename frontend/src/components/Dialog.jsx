@@ -24,22 +24,83 @@ export function Dialog({ type, message, onConfirm, onCancel, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" onKeyDown={handleKeyDown}>
-      <div className="absolute inset-0 bg-base/70 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative z-10 bg-surface border border-wiki-border rounded-lg shadow-2xl w-80 p-5">
-        <p className="text-wiki-text text-sm mb-4 leading-relaxed">{message}</p>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      onKeyDown={handleKeyDown}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'color-mix(in srgb, var(--bg-base) 70%, transparent)',
+          backdropFilter: 'blur(4px)',
+        }}
+        onClick={onCancel}
+      />
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 10,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.32)',
+          width: 320,
+          padding: 20,
+        }}
+      >
+        <p
+          style={{
+            color: 'var(--text-base)',
+            fontSize: 14,
+            marginBottom: 16,
+            lineHeight: 1.5,
+            margin: '0 0 16px',
+          }}
+        >
+          {message}
+        </p>
         {type === 'prompt' && (
           <input
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full bg-elevated border border-wiki-border-bright text-wiki-text text-sm px-3 py-2 rounded outline-none focus:border-accent/70 mb-4 font-mono"
+            style={{
+              display: 'block',
+              width: '100%',
+              boxSizing: 'border-box',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-bright)',
+              color: 'var(--text-base)',
+              fontSize: 13,
+              padding: '8px 12px',
+              borderRadius: 6,
+              outline: 'none',
+              marginBottom: 16,
+              fontFamily: 'var(--font-mono)',
+            }}
           />
         )}
-        <div className="flex justify-end gap-2">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button
             onClick={onCancel}
-            className="px-3 py-1.5 text-xs text-wiki-muted hover:text-wiki-text bg-elevated hover:bg-wiki-border rounded transition-colors"
+            style={{
+              padding: '6px 12px',
+              fontSize: 12,
+              color: 'var(--text-muted)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border)',
+              borderRadius: 6,
+              cursor: 'pointer',
+              transition: 'color 0.1s, background 0.1s',
+            }}
           >
             Cancel
           </button>
@@ -47,7 +108,16 @@ export function Dialog({ type, message, onConfirm, onCancel, onSubmit }) {
             <button
               ref={confirmRef}
               onClick={onConfirm}
-              className="px-3 py-1.5 text-xs text-white bg-red-600/80 hover:bg-red-600 rounded transition-colors"
+              style={{
+                padding: '6px 12px',
+                fontSize: 12,
+                color: '#fff',
+                background: 'rgba(220,38,38,0.8)',
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer',
+                transition: 'background 0.1s',
+              }}
             >
               Delete
             </button>
@@ -55,7 +125,16 @@ export function Dialog({ type, message, onConfirm, onCancel, onSubmit }) {
             <button
               ref={confirmRef}
               onClick={() => value.trim() && onSubmit(value.trim())}
-              className="px-3 py-1.5 text-xs text-wiki-text bg-accent/20 hover:bg-accent/30 border border-accent/30 rounded transition-colors"
+              style={{
+                padding: '6px 12px',
+                fontSize: 12,
+                color: 'var(--text-base)',
+                background: 'color-mix(in srgb, var(--accent) 20%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)',
+                borderRadius: 6,
+                cursor: 'pointer',
+                transition: 'background 0.1s',
+              }}
             >
               OK
             </button>

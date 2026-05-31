@@ -21,19 +21,54 @@ export function Toast({ message, onConfirm, onDismiss }) {
   if (!message) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 bg-elevated border border-wiki-border-bright rounded-xl shadow-2xl px-4 py-3 flex items-center gap-3 max-w-sm">
-      <span className="text-sm text-wiki-text flex-1">{message}</span>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 24,
+        right: 24,
+        zIndex: 50,
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-bright)',
+        borderRadius: 12,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.32)',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        maxWidth: 360,
+      }}
+    >
+      <span style={{ fontSize: 14, color: 'var(--text-base)', flex: 1 }}>{message}</span>
       {onConfirm && (
         <button
           onClick={onConfirm}
-          className="text-sm text-accent hover:text-accent-dim font-medium transition-colors whitespace-nowrap"
+          style={{
+            fontSize: 14,
+            color: 'var(--accent)',
+            fontWeight: 500,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            padding: 0,
+            transition: 'color 0.1s',
+          }}
         >
           Reload
         </button>
       )}
       <button
         onClick={onDismiss}
-        className="text-wiki-faint hover:text-wiki-text text-lg leading-none transition-colors"
+        style={{
+          fontSize: 18,
+          lineHeight: 1,
+          color: 'var(--text-faint)',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0,
+          transition: 'color 0.1s',
+        }}
       >
         ×
       </button>

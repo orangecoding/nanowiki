@@ -22,17 +22,17 @@ const noop = () => {};
 it('renders files and folders', () => {
   render(<FileTree tree={tree} activePath={null} onOpen={noop} onCreate={noop} onRename={noop} onDelete={noop} />);
   expect(screen.getByText('notes')).toBeInTheDocument();
-  expect(screen.getByText('readme.md')).toBeInTheDocument();
+  expect(screen.getByText('readme')).toBeInTheDocument();
 });
 
 it('calls onOpen when a file is clicked', async () => {
   const onOpen = vi.fn();
   render(<FileTree tree={tree} activePath={null} onOpen={onOpen} onCreate={noop} onRename={noop} onDelete={noop} />);
-  await userEvent.click(screen.getByText('readme.md'));
+  await userEvent.click(screen.getByText('readme'));
   expect(onOpen).toHaveBeenCalledWith('readme.md');
 });
 
 it('highlights the active file', () => {
   render(<FileTree tree={tree} activePath="readme.md" onOpen={noop} onCreate={noop} onRename={noop} onDelete={noop} />);
-  expect(screen.getByText('readme.md').closest('[data-active]')).toBeInTheDocument();
+  expect(screen.getByText('readme').closest('[data-active]')).toBeInTheDocument();
 });

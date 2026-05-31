@@ -20,12 +20,24 @@ export function ContextMenu({ x, y, items, onClose }) {
   return createPortal(
     <ul
       ref={ref}
-      style={{ top: y, left: x }}
-      className="fixed z-50 bg-elevated border border-wiki-border-bright rounded-lg shadow-2xl py-1 min-w-[160px]"
+      style={{
+        position: 'fixed',
+        top: y,
+        left: x,
+        zIndex: 50,
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-bright)',
+        borderRadius: 8,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.32)',
+        padding: '4px 0',
+        minWidth: 160,
+        listStyle: 'none',
+        margin: 0,
+      }}
     >
       {items.map((item) =>
         item.divider ? (
-          <li key={item.key} className="border-t border-wiki-border my-1" />
+          <li key={item.key} style={{ borderTop: '1px solid var(--border)', margin: '4px 0' }} />
         ) : (
           <li key={item.label}>
             <button
@@ -33,9 +45,26 @@ export function ContextMenu({ x, y, items, onClose }) {
                 item.onClick();
                 onClose();
               }}
-              className={`w-full text-left px-4 py-1.5 text-sm transition-colors hover:bg-surface ${
-                item.danger ? 'text-red-400 hover:text-red-300' : 'text-wiki-muted hover:text-wiki-text'
-              }`}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '6px 16px',
+                fontSize: 13,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: item.danger ? 'var(--red, #e05252)' : 'var(--text-muted)',
+                transition: 'background 0.1s, color 0.1s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--bg-surface)';
+                e.currentTarget.style.color = item.danger ? 'var(--red, #e05252)' : 'var(--text-base)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none';
+                e.currentTarget.style.color = item.danger ? 'var(--red, #e05252)' : 'var(--text-muted)';
+              }}
             >
               {item.label}
             </button>

@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor as useTiptap, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 import Link from '@tiptap/extension-link';
@@ -15,18 +15,125 @@ import { useState, useEffect, useCallback, useRef, startTransition } from 'react
 import { Toolbar } from './Toolbar.jsx';
 import { RawEditor } from './RawEditor.jsx';
 import { ResizableImage } from './ResizableImage.js';
+import { Icon } from '../Icon.jsx';
 import { titleFromPath } from '../../utils/fileLinks.js';
 
 const lowlight = createLowlight(common);
 
-export function Editor({ filePath, content, onChange, onImageDrop, savedState, onNavigate }) {
+function SavePill({ dirty, savedState }) {
+  const state =
+    dirty && savedState === 'idle'
+      ? 'dirty'
+      : savedState === 'saving'
+        ? 'saving'
+        : savedState === 'saved'
+          ? 'saved'
+          : null;
+
+  if (!state) return null;
+  if (state === 'saving')
+    return (
+      <span className="savepill savepill--saving">
+        <span className="savepill__dot" />
+        Saving…
+      </span>
+    );
+  if (state === 'dirty')
+    return (
+      <span className="savepill savepill--dirty">
+        <span className="savepill__dot" />
+        Unsaved changes
+      </span>
+    );
+  return (
+    <span className="savepill savepill--saved">
+      <span className="savepill__dot" />
+      <Icon name="check" size={12} />
+      Saved
+    </span>
+  );
+}
+
+function Breadcrumb({ path }) {
+  const segments = path.split('/');
+  return (
+    <div className="crumbs">
+      {segments.map((seg, i) => (
+        <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {i > 0 && (
+            <span className="crumbs__sep">
+              <Icon name="chevron" size={11} />
+            </span>
+          )}
+          <span className="crumbs__item">{i === segments.length - 1 ? seg.replace(/\.md$/, '') : seg}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+const HISTORY_REVISIONS = [
+  { id: 0, label: 'Current version', meta: 'Auto-saved', ago: 'just now', current: true },
+  { id: 1, label: 'Edited', meta: 'Added content', ago: '12 min ago', current: false },
+  { id: 2, label: 'Edited', meta: 'Minor changes', ago: '1 hr ago', current: false },
+  { id: 3, label: 'Created', meta: 'Initial version', ago: 'yesterday', current: false },
+];
+
+function HistoryPanel({ onClose }) {
+  const revisions = HISTORY_REVISIONS;
+
+  return (
+    <div className="history">
+      <div className="history__head">
+        <div className="history__title">Version history</div>
+        <div className="history__sub">{revisions.length} revisions · autosaved</div>
+      </div>
+      <div className="history__list">
+        {revisions.map((r) => (
+          <div key={r.id} className={`hrev${r.current ? ' hrev--now' : ''}`}>
+            <div className="hrev__rail">
+              <span className="hrev__dot" />
+              <span className="hrev__line" />
+            </div>
+            <div className="hrev__body">
+              <div className="hrev__when">
+                {r.label} <span className="hrev__time">· {r.ago}</span>
+              </div>
+              <div className="hrev__meta">{r.meta}</div>
+            </div>
+            {!r.current && (
+              <button className="hrev__restore" onClick={onClose}>
+                Restore
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function Editor({
+  filePath,
+  content,
+  onChange,
+  onImageDrop,
+  savedState,
+  dirty,
+  onNavigate,
+  historyOpen: _historyOpenProp,
+  onToggleHistory: _onToggleHistory,
+  canvasRef: canvasRefProp,
+}) {
   const [rawMode, setRawMode] = useState(false);
   const [rawValue, setRawValue] = useState(content);
   const [imgAlt, setImgAlt] = useState('');
   const [imgSrc, setImgSrc] = useState('');
   const [imageMenuVisible, setImageMenuVisible] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const internalCanvasRef = useRef(null);
+  const canvasRef = canvasRefProp || internalCanvasRef;
 
-  // Stable refs so editorProps closure always has latest values
   const onImageDropRef = useRef(onImageDrop);
   useEffect(() => {
     onImageDropRef.current = onImageDrop;
@@ -37,15 +144,14 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
   });
   const editorRef = useRef(null);
 
-  const editor = useEditor({
+  const editor = useTiptap({
     extensions: [
-      StarterKit.configure({ codeBlock: false }),
+      StarterKit.configure({ codeBlock: false, strike: false, link: false }),
       Markdown,
       Strike,
       Link.configure({
         openOnClick: false,
         isAllowedUri: (url, ctx) => {
-          // Allow relative file paths (no colon = not an absolute URI scheme)
           if (!url.includes(':')) return true;
           return ctx.defaultValidate(url);
         },
@@ -73,30 +179,24 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
       });
     },
     editorProps: {
-      attributes: { class: 'prose max-w-none focus:outline-none min-h-full px-8 py-6' },
+      attributes: { class: 'md focus:outline-none min-h-full' },
       handleClick(view, pos, event) {
         const target = event.target.closest('a');
         if (!target) return false;
         const href = target.getAttribute('href');
-        // Only intercept .md paths without a protocol (not https://, mailto:, etc.)
         if (!href || href.includes(':') || !href.endsWith('.md')) return false;
         if (!onNavigateRef.current) return false;
         event.preventDefault();
         onNavigateRef.current(decodeURI(href));
         return true;
       },
-      // Intercept drop at ProseMirror level to prevent default handling interfering
       handleDrop(view, event) {
-        // Check for internal file drag first
         const droppedFilePath = event.dataTransfer?.getData('application/x-nanowiki-path');
         if (droppedFilePath) {
           event.preventDefault();
           const title = titleFromPath(droppedFilePath);
           const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
           if (pos) {
-            // Insert a proper ProseMirror text node with a link mark
-            // (not raw markdown text — TipTap stores a PM document internally)
-            // Encode spaces so the href survives markdown round-trips (spaces break URL parsing)
             const { schema } = view.state;
             const linkMark = schema.marks.link.create({ href: encodeURI(droppedFilePath) });
             const textNode = schema.text(title, [linkMark]);
@@ -104,8 +204,6 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
           }
           return true;
         }
-
-        // Existing image drop logic
         const files = [...(event.dataTransfer?.files ?? [])];
         const images = files.filter((f) => f.type.startsWith('image/'));
         if (images.length === 0) return false;
@@ -126,18 +224,14 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
     },
   });
 
-  // Keep editorRef in sync
   useEffect(() => {
     editorRef.current = editor;
   }, [editor]);
 
-  // Reload editor when file changes
   useEffect(() => {
     if (!editor || rawMode) return;
     const current = editor.storage.markdown.getMarkdown();
-    if (current !== content) {
-      editor.commands.setContent(content);
-    }
+    if (current !== content) editor.commands.setContent(content);
   }, [content, filePath]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -166,64 +260,148 @@ export function Editor({ filePath, content, onChange, onImageDrop, savedState, o
 
   if (!filePath) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-2 text-wiki-faint text-sm bg-base">
-        <span className="text-2xl opacity-30">✎</span>
+      <div className="editor" style={{ alignItems: 'center', justifyContent: 'center', color: 'var(--text-faint)' }}>
         Select a file to start editing
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-base" onDragOver={(e) => e.preventDefault()}>
-      <Toolbar key={filePath} editor={editor} rawMode={rawMode} onToggleRaw={toggleRaw} savedState={savedState} />
-      <div className="flex-1 overflow-y-auto">
+    <div className="editor" onDragOver={(e) => e.preventDefault()}>
+      {/* Breadcrumb bar */}
+      <div className="crumbbar">
+        <Breadcrumb path={filePath} />
+        <div className="crumbbar__spacer" />
+        <div className="crumbbar__actions">
+          <span className="savepill-desktop">
+            <SavePill dirty={dirty} savedState={savedState} />
+          </span>
+
+          {/* Version history */}
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <button
+              className={`iconbtn${historyOpen ? ' iconbtn--on' : ''}`}
+              title="Version history"
+              onClick={() => setHistoryOpen((v) => !v)}
+            >
+              <Icon name="history" size={17} />
+            </button>
+            {historyOpen && (
+              <>
+                <div style={{ position: 'fixed', inset: 0, zIndex: 55 }} onClick={() => setHistoryOpen(false)} />
+                <div className="pop history" style={{ right: 0, top: 'calc(100% + 8px)', zIndex: 60 }}>
+                  <HistoryPanel onClose={() => setHistoryOpen(false)} />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Editor / Raw toggle */}
+          <div className="seg">
+            <button className={!rawMode ? 'active' : ''} onClick={() => rawMode && toggleRaw()}>
+              Editor
+            </button>
+            <button className={rawMode ? 'active' : ''} onClick={() => !rawMode && toggleRaw()}>
+              <Icon name="code" size={13} />
+              Raw
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Formatting toolbar (editor mode only) */}
+      {!rawMode && <Toolbar editor={editor} />}
+
+      {/* Image attribute bar */}
+      {!rawMode && imageMenuVisible && editor && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg-elevated)',
+            borderBottom: '1px solid var(--border)',
+            padding: '6px 24px',
+            fontSize: 13,
+          }}
+        >
+          <label style={{ color: 'var(--text-faint)', flexShrink: 0 }}>Alt</label>
+          <input
+            value={imgAlt}
+            onChange={(e) => setImgAlt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
+                editor.commands.focus();
+              }
+              e.stopPropagation();
+            }}
+            placeholder="alt text"
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-bright)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--text)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 12,
+              padding: '2px 8px',
+              outline: 'none',
+              width: 120,
+            }}
+          />
+          <label style={{ color: 'var(--text-faint)', flexShrink: 0 }}>Src</label>
+          <input
+            value={imgSrc}
+            onChange={(e) => setImgSrc(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
+                editor.commands.focus();
+              }
+              e.stopPropagation();
+            }}
+            placeholder="url"
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-bright)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--text)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 12,
+              padding: '2px 8px',
+              outline: 'none',
+              width: 200,
+            }}
+          />
+          <button
+            onClick={() => {
+              editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
+              editor.commands.focus();
+            }}
+            style={{
+              background: 'rgba(224,74,56,0.15)',
+              color: 'var(--accent)',
+              border: 'none',
+              borderRadius: 'var(--radius-sm)',
+              padding: '3px 10px',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Apply
+          </button>
+        </div>
+      )}
+
+      {/* Canvas */}
+      <div className="canvas" ref={canvasRef}>
         {rawMode ? (
           <RawEditor value={rawValue} onChange={handleRawChange} />
         ) : (
-          <>
-            {imageMenuVisible && editor && (
-              <div className="flex items-center gap-1.5 bg-elevated border-b border-wiki-border px-2 py-1.5 text-xs">
-                <label className="text-wiki-faint shrink-0">Alt</label>
-                <input
-                  value={imgAlt}
-                  onChange={(e) => setImgAlt(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
-                      editor.commands.focus();
-                    }
-                    e.stopPropagation();
-                  }}
-                  placeholder="alt text"
-                  className="bg-surface border border-wiki-border-bright rounded px-1.5 py-0.5 text-wiki-text outline-none w-28 font-mono"
-                />
-                <label className="text-wiki-faint shrink-0">Src</label>
-                <input
-                  value={imgSrc}
-                  onChange={(e) => setImgSrc(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
-                      editor.commands.focus();
-                    }
-                    e.stopPropagation();
-                  }}
-                  placeholder="url"
-                  className="bg-surface border border-wiki-border-bright rounded px-1.5 py-0.5 text-wiki-text outline-none w-48 font-mono"
-                />
-                <button
-                  onClick={() => {
-                    editor.commands.updateAttributes('image', { alt: imgAlt, src: imgSrc });
-                    editor.commands.focus();
-                  }}
-                  className="bg-accent/20 hover:bg-accent/30 text-accent px-2 py-0.5 rounded transition-colors shrink-0"
-                >
-                  Apply
-                </button>
-              </div>
-            )}
-            <EditorContent editor={editor} className="h-full" />
-          </>
+          <article className="doc" key={filePath}>
+            <EditorContent editor={editor} />
+          </article>
         )}
       </div>
     </div>

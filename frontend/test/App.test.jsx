@@ -22,6 +22,6 @@ vi.mock('../src/hooks/useWebSocket.js', () => ({
 it('renders without crashing', async () => {
   const { default: App } = await import('../src/App.jsx');
   render(<App />);
-  expect(screen.getByText('Nano')).toBeInTheDocument();
-  expect(screen.getByText('Wiki')).toBeInTheDocument();
+  expect(screen.getAllByText('Nano').length).toBeGreaterThan(0);
+  expect(screen.getAllByText('Wiki').length).toBeGreaterThan(0);
 });
