@@ -1,6 +1,7 @@
 # Stage 1: Build frontend
 FROM node:22-slim AS frontend-build
 WORKDIR /build
+COPY package.json ./
 COPY frontend/package.json ./frontend/
 RUN yarn --cwd frontend install --no-lockfile
 COPY frontend/ ./frontend/
