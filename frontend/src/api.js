@@ -53,3 +53,8 @@ export const deleteImage = (urlPath) => {
   const relPath = urlPath.replace(/^\/files\//, '');
   return request(`/api/images/${relPath}`, { method: 'DELETE' });
 };
+
+export const getLlmConfig = () => request('/api/llm/config');
+
+export const rewriteWithLlm = (markdown, tone, style) =>
+  request('/api/llm/rewrite', { method: 'POST', body: { markdown, tone, style } });

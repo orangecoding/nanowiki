@@ -637,6 +637,30 @@ button {
   font-size: 12px;
   font-family: var(--font-mono);
 }
+.tb-btn--ai {
+  color: var(--accent);
+  background: var(--accent-glow);
+  border-color: rgba(224, 74, 56, 0.28);
+  padding: 0 10px;
+  gap: 5px;
+  transition:
+    background 100ms,
+    color 100ms,
+    border-color 100ms,
+    box-shadow 100ms;
+}
+.tb-btn--ai:hover {
+  color: var(--accent);
+  background: rgba(224, 74, 56, 0.28);
+  border-color: rgba(224, 74, 56, 0.5);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.tb-btn--ai.active,
+.tb-btn--ai:disabled {
+  color: var(--accent);
+  background: rgba(224, 74, 56, 0.22);
+  border-color: rgba(224, 74, 56, 0.45);
+}
 
 /* scrolling content area */
 .canvas {
@@ -1783,4 +1807,89 @@ textarea:focus-visible,
 }
 .ProseMirror img.ProseMirror-selectednode {
   outline: 2px solid var(--accent);
+}
+
+/* AI Rewrite popover */
+.ai-pop {
+  width: 260px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ai-pop__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ai-pop__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.ai-pop__seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.ai-pop__seg-btn {
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    background 0.1s,
+    color 0.1s,
+    border-color 0.1s;
+}
+.ai-pop__seg-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+.ai-pop__seg-btn.active {
+  background: var(--bg-elevated);
+  border-color: var(--border-bright);
+  color: var(--accent);
+}
+.ai-pop__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 2px;
+  border-top: 1px solid var(--border);
+}
+.ai-pop__btn {
+  padding: 5px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  transition:
+    background 0.1s,
+    color 0.1s;
+}
+.ai-pop__btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+.ai-pop__btn--accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.ai-pop__btn--accent:hover {
+  opacity: 0.88;
+}
+.ai-pop__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

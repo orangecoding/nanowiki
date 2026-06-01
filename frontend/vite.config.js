@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: 'jsdom',
       globals: true,
-      setupFiles: './test/setup.js',
-      include: ['test/**/*.{test,spec}.{js,jsx}', 'src/**/*.{test,spec}.{js,jsx}'],
+      setupFiles: './frontend/test/setup.js',
+      include: ['frontend/test/**/*.{test,spec}.{js,jsx}', 'frontend/src/**/*.{test,spec}.{js,jsx}'],
     },
   };
 });

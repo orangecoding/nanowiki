@@ -46,6 +46,8 @@ const ICON_PATHS = {
   outline: '<path d="M2.6 4.5h2M2.6 8h2M2.6 11.5h2M6.5 4.5h7M6.5 8h7M6.5 11.5h7"/>',
   info: '<circle cx="8" cy="8" r="6"/><path d="M8 7.2v3.6M8 5.2v.2"/>',
   warn: '<path d="M8 2 14.5 13.5h-13Z"/><path d="M8 6.5v3.2M8 11.6v.2"/>',
+  sparkles:
+    '<path fill="currentColor" stroke="none" d="M11 2 11.8 4.2 14 5 11.8 5.8 11 8 10.2 5.8 8 5 10.2 4.2ZM4.5 9 5 10.5 6.5 11 5 11.5 4.5 13 4 11.5 2.5 11 4 10.5ZM13.5 9.5 13.9 10.6 15 11 13.9 11.4 13.5 12.5 13.1 11.4 12 11 13.1 10.6Z"/>',
 };
 
 export function Icon({ name, size = 16, stroke = 1.6, className = '', style }) {

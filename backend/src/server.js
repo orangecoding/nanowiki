@@ -17,6 +17,7 @@ import filesRoutes from './routes/files.js';
 import contentRoutes from './routes/content.js';
 import imagesRoutes from './routes/images.js';
 import searchRoutes from './routes/search.js';
+import llmRoutes from './routes/llm.js';
 import { addClient, startWatcher } from './services/watcher.js';
 import { config } from './config.js';
 
@@ -60,6 +61,7 @@ export async function build(opts = {}) {
   await fastify.register(contentRoutes);
   await fastify.register(imagesRoutes);
   await fastify.register(searchRoutes);
+  await fastify.register(llmRoutes);
 
   fastify.get('/ws', { websocket: true }, (socket) => {
     addClient(socket);

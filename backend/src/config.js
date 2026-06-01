@@ -26,3 +26,31 @@ export function initConfig() {
   config.dataDir = resolved;
   config.port = parseInt(process.env.PORT ?? '3001', 10);
 }
+
+export function getLlmProvider() {
+  if (process.env.OPENAI_API_KEY) {
+    return {
+      provider: 'openai',
+      apiKey: process.env.OPENAI_API_KEY,
+      model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+      baseUrl: null,
+    };
+  }
+  if (process.env.ANTHROPIC_API_KEY) {
+    return {
+      provider: 'anthropic',
+      apiKey: process.env.ANTHROPIC_API_KEY,
+      model: process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-4-6',
+      baseUrl: null,
+    };
+  }
+  if (process.env.OLLAMA_BASE_URL) {
+    return {
+      provider: 'ollama',
+      apiKey: null,
+      model: process.env.OLLAMA_MODEL ?? 'llama3',
+      baseUrl: process.env.OLLAMA_BASE_URL,
+    };
+  }
+  return null;
+}
