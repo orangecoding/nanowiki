@@ -149,4 +149,4 @@ yarn start   # http://localhost:3001
 
 ## License
 
-Apache 2.0 - see [LICENSE](LICENSE).
+Apache 2.0: see [LICENSE](LICENSE).
