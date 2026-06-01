@@ -82,6 +82,7 @@ export function useEditor(filePath, { onError, onImageDelete } = {}) {
         await api.saveContent(path, newContent);
         setDirty(false);
         setSavedState('saved');
+        clearTimeout(savedResetTimer.current);
         savedResetTimer.current = setTimeout(() => setSavedState('idle'), 2000);
 
         // Delete image files that were removed from the document
@@ -91,8 +92,9 @@ export function useEditor(filePath, { onError, onImageDelete } = {}) {
         for (const url of removed) {
           onImageDeleteRef.current?.(url);
         }
-      } catch {
+      } catch (err) {
         setSavedState('idle');
+        onErrorRef.current?.(`Failed to save: ${err.message ?? err}`);
       }
     }, 500);
   }, []);

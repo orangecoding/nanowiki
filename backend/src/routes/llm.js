@@ -35,7 +35,9 @@ async function callOpenAI(apiKey, model, systemPrompt, markdown) {
     throw new Error(err.error?.message ?? `OpenAI error: ${res.status}`);
   }
   const data = await res.json();
-  return data.choices[0].message.content;
+  const text = data.choices?.[0]?.message?.content;
+  if (typeof text !== 'string') throw new Error('Unexpected response from OpenAI');
+  return text;
 }
 
 async function callAnthropic(apiKey, model, systemPrompt, markdown) {
@@ -58,7 +60,9 @@ async function callAnthropic(apiKey, model, systemPrompt, markdown) {
     throw new Error(err.error?.message ?? `Anthropic error: ${res.status}`);
   }
   const data = await res.json();
-  return data.content[0].text;
+  const text = data.content?.[0]?.text;
+  if (typeof text !== 'string') throw new Error('Unexpected response from Anthropic');
+  return text;
 }
 
 async function callOllama(baseUrl, model, systemPrompt, markdown) {
@@ -79,7 +83,9 @@ async function callOllama(baseUrl, model, systemPrompt, markdown) {
     throw new Error(err.error ?? `Ollama error: ${res.status}`);
   }
   const data = await res.json();
-  return data.message.content;
+  const text = data.message?.content;
+  if (typeof text !== 'string') throw new Error('Unexpected response from Ollama');
+  return text;
 }
 
 export default async function llmRoutes(fastify) {

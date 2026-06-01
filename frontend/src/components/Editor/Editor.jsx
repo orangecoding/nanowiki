@@ -121,8 +121,6 @@ export function Editor({
   savedState,
   dirty,
   onNavigate,
-  historyOpen: _historyOpenProp,
-  onToggleHistory: _onToggleHistory,
   canvasRef: canvasRefProp,
 }) {
   const [rawMode, setRawMode] = useState(false);

@@ -11,7 +11,6 @@ import { flattenTree } from '../utils/fileLinks.js';
 const ACTIONS = [
   { id: 'new-file', title: 'New page', icon: 'newFile', kw: 'create add' },
   { id: 'new-folder', title: 'New folder', icon: 'newFolder', kw: 'create add directory' },
-  { id: 'history', title: 'View version history', icon: 'history', kw: 'revisions undo' },
   { id: 'settings', title: 'Open appearance settings', icon: 'settings', kw: 'theme accent density' },
 ];
 
@@ -156,8 +155,6 @@ export function CommandPalette({ tree, activePath: _activePath, onClose, onOpenF
     }
   }, [sel]);
 
-  let runningIdx = -1;
-
   return (
     <div
       className="scrim"
@@ -181,60 +178,62 @@ export function CommandPalette({ tree, activePath: _activePath, onClose, onOpenF
         </div>
 
         <div className="palette__body" ref={bodyRef}>
-          {groups.map((group) => (
-            <div key={group.label}>
-              {group.label && <div className="palette__group-label">{group.label}</div>}
-              {group.items.length === 0 && searchQuery && !isActions && (
-                <div className="palette__empty">No results for "{searchQuery}"</div>
-              )}
-              {group.items.map((item) => {
-                runningIdx++;
-                const idx = runningIdx;
-                const isSel = idx === sel;
+          {groups.map((group, groupIdx) => {
+            const groupOffset = groups.slice(0, groupIdx).reduce((acc, g) => acc + g.items.length, 0);
+            return (
+              <div key={group.label}>
+                {group.label && <div className="palette__group-label">{group.label}</div>}
+                {group.items.length === 0 && searchQuery && !isActions && (
+                  <div className="palette__empty">No results for "{searchQuery}"</div>
+                )}
+                {group.items.map((item, localIdx) => {
+                  const idx = groupOffset + localIdx;
+                  const isSel = idx === sel;
 
-                if (item.kind === 'action') {
+                  if (item.kind === 'action') {
+                    return (
+                      <button
+                        key={item.id}
+                        className={`presult${isSel ? ' sel' : ''}`}
+                        onClick={() => choose(item)}
+                        onMouseEnter={() => setSel(idx)}
+                      >
+                        <span className="presult__icon">
+                          <Icon name={item.icon} size={16} />
+                        </span>
+                        <span className="presult__body">
+                          <span className="presult__title">{item.title}</span>
+                        </span>
+                        {isSel && <span className="presult__enter">↵</span>}
+                      </button>
+                    );
+                  }
+
+                  const name = item.path.split('/').pop().replace(/\.md$/, '');
                   return (
                     <button
-                      key={item.id}
+                      key={item.path}
                       className={`presult${isSel ? ' sel' : ''}`}
                       onClick={() => choose(item)}
                       onMouseEnter={() => setSel(idx)}
                     >
                       <span className="presult__icon">
-                        <Icon name={item.icon} size={16} />
+                        <Icon name="file" size={16} />
                       </span>
                       <span className="presult__body">
-                        <span className="presult__title">{item.title}</span>
+                        <span className="presult__title">{highlight(name, searchQuery)}</span>
+                        <span className="presult__path">{item.path}</span>
+                        {item.snippet && (
+                          <span className="presult__snippet">{makeSnippet(item.snippet, searchQuery)}</span>
+                        )}
                       </span>
                       {isSel && <span className="presult__enter">↵</span>}
                     </button>
                   );
-                }
-
-                const name = item.path.split('/').pop().replace(/\.md$/, '');
-                return (
-                  <button
-                    key={item.path}
-                    className={`presult${isSel ? ' sel' : ''}`}
-                    onClick={() => choose(item)}
-                    onMouseEnter={() => setSel(idx)}
-                  >
-                    <span className="presult__icon">
-                      <Icon name="file" size={16} />
-                    </span>
-                    <span className="presult__body">
-                      <span className="presult__title">{highlight(name, searchQuery)}</span>
-                      <span className="presult__path">{item.path}</span>
-                      {item.snippet && (
-                        <span className="presult__snippet">{makeSnippet(item.snippet, searchQuery)}</span>
-                      )}
-                    </span>
-                    {isSel && <span className="presult__enter">↵</span>}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+                })}
+              </div>
+            );
+          })}
         </div>
 
         <div className="palette__foot">

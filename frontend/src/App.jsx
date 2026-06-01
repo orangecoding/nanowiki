@@ -63,7 +63,6 @@ export default function App() {
       return [];
     }
   });
-  const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sheet, setSheet] = useState(null);
@@ -154,7 +153,6 @@ export default function App() {
         handleCreate('file', parentPath);
       } else if (e.key === 'Escape') {
         setPaletteOpen(false);
-        setHistoryOpen(false);
         setSettingsOpen(false);
         setDrawerOpen(false);
         setSheet(null);
@@ -238,7 +236,6 @@ export default function App() {
       setSheet(null);
       if (id === 'new-file') handleCreate('file', null);
       else if (id === 'new-folder') handleCreate('folder', null);
-      else if (id === 'history') setHistoryOpen(true);
       else if (id === 'settings') setSettingsOpen(true);
     },
     [handleCreate],
@@ -369,10 +366,6 @@ export default function App() {
               savedState={savedState}
               dirty={dirty}
               onNavigate={handleNavigate}
-              historyOpen={historyOpen}
-              onToggleHistory={() => setHistoryOpen((v) => !v)}
-              settingsOpen={settingsOpen}
-              tree={tree}
               canvasRef={canvasRef}
             />
           )}

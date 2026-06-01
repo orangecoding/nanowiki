@@ -3,9 +3,14 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 export default {
   darkMode: 'class',
-  content: ['./index.html', './src/**/*.{js,jsx}'],
+  content: [join(__dirname, 'index.html'), join(__dirname, 'src/**/*.{js,jsx}')],
   theme: {
     extend: {
       colors: {

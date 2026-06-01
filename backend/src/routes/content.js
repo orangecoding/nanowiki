@@ -17,10 +17,14 @@ export default async function contentRoutes(fastify) {
     }
   });
 
-  fastify.put('/api/content/*', async (req) => {
+  fastify.put('/api/content/*', async (req, reply) => {
     const path = req.params['*'];
+    const { content } = req.body ?? {};
+    if (typeof content !== 'string') {
+      return reply.status(400).send({ error: 'content must be a string' });
+    }
     markSaved(path); // mark before write so chokidar event is suppressed
-    await writeContent(path, req.body.content);
+    await writeContent(path, content);
     return { ok: true };
   });
 }

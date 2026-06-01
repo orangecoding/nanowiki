@@ -10,7 +10,10 @@ export default async function filesRoutes(fastify) {
   fastify.get('/api/files', async () => getTree());
 
   fastify.post('/api/files', async (req, reply) => {
-    const { type, path } = req.body;
+    const { type, path } = req.body ?? {};
+    if (typeof path !== 'string' || !path) {
+      return reply.status(400).send({ error: 'path is required' });
+    }
     if (type === 'folder') await createFolder(path);
     else await createFile(path);
     reply.status(201).send({ ok: true });

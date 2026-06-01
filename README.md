@@ -18,7 +18,7 @@ A local wiki that reads and writes Markdown files from a directory on your machi
 
 ---
 
-![Nanowiki](docs/screen1.png)
+![Nanowiki](docs/screen.png)
 
 ---
 

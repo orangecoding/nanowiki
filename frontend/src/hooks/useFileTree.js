@@ -31,7 +31,8 @@ export function useFileTree({ onError, showConfirm, showPrompt, onCreated } = {}
         await api.createEntry(type, path);
         await refresh();
         if (parentPath) onCreated?.(parentPath);
-        return path;
+        const normalizedPath = type === 'file' && !path.endsWith('.md') ? path + '.md' : path;
+        return normalizedPath;
       } catch (err) {
         onError?.(`Failed to create ${type}: ${err.message}`);
       }
