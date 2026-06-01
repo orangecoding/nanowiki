@@ -29,7 +29,7 @@ export function extractHeadings(markdown) {
 }
 
 function findBacklinks(_filePath, _tree) {
-  // Backlinks detection from file tree (simplified — no content search)
+  // Backlinks detection from file tree (simplified no content search)
   // In production this could be a backend call
   return [];
 }

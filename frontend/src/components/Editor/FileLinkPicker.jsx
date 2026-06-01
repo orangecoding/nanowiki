@@ -12,8 +12,8 @@ import { titleFromPath } from '../../utils/fileLinks.js';
  * into the TipTap editor at the current cursor position.
  *
  * Props:
- *   editor   — the TipTap editor instance
- *   onClose  — called when the picker should close
+ *   editor  the TipTap editor instance
+ *   onClose called when the picker should close
  */
 export function FileLinkPicker({ editor, onClose }) {
   const [query, setQuery] = useState('');
@@ -66,7 +66,7 @@ export function FileLinkPicker({ editor, onClose }) {
       editor.chain().focus().setLink({ href }).run();
     } else {
       // Insert a new text node with a link mark at cursor
-      // (must use the PM schema directly — insertContent with a markdown string
+      // (must use the PM schema directly, insertContent with a markdown string
       //  won't produce a link mark in TipTap's internal PM document)
       const { schema } = editor.state;
       const linkMark = schema.marks.link.create({ href });

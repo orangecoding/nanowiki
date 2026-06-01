@@ -77,7 +77,7 @@ export function Toolbar({ editor }) {
   return (
     <>
       <div className="toolbar">
-        {/* AI Rewrite — only rendered when a provider is configured */}
+        {/* AI Rewrite, only rendered when a provider is configured */}
         {llmProvider && (
           <>
             <div className="tb-group">
