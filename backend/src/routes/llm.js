@@ -75,6 +75,7 @@ async function callOllama(baseUrl, model, systemPrompt, markdown) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: markdown },
       ],
+      think: false,
       stream: false,
     }),
   });
